@@ -3,239 +3,286 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Björn Quiz</title>
+<title>Björn’s Quiz</title>
 <script src="/socket.io/socket.io.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:linear-gradient(135deg,#6a11cb,#2575fc);color:white;display:flex;justify-content:center;align-items:center;height:100vh;}
-.container{background:rgba(0,0,0,0.7);padding:20px;border-radius:15px;width:420px;max-height:90vh;overflow:auto;}
-button{width:100%;padding:12px;margin:6px 0;border:none;border-radius:8px;background:#ff4757;color:white;font-weight:bold;cursor:pointer;}
-input,select{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:none;}
-button:disabled{background:gray;}
-.answer:nth-child(1){background:#1e90ff}
-.answer:nth-child(2){background:#2ed573}
-.answer:nth-child(3){background:#ffa502}
-.answer:nth-child(4){background:#ff6b81}
-.quiz-item{border:1px solid #aaa;padding:8px;margin:6px 0;cursor:pointer;}
-.quiz-item:hover{background:rgba(255,255,255,0.1);}
-h1,h3{text-align:center;}ul{list-style:none;padding:0;}
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.box{
+    background:rgba(0,0,0,0.65);
+    padding:20px;
+    border-radius:14px;
+    width:400px;
+    max-height:90vh;
+    overflow:auto;
+}
+h1,h2{text-align:center}
+button,input,select{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+}
+button{
+    background:#ff4757;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:disabled{background:#555}
+.answer{margin-top:6px}
+.quiz-item{
+    border:1px solid rgba(255,255,255,0.3);
+    padding:8px;
+    border-radius:6px;
+    margin:6px 0;
+    cursor:pointer;
+}
+.quiz-item:hover{background:rgba(255,255,255,0.1)}
+ul{list-style:none;padding:0}
+hr{opacity:0.3}
 </style>
 </head>
-<body>
-<div class="container">
-<h1>Björn Quiz</h1>
 
+<body>
+<div class="box">
+
+<h1>🎉 Björn’s Quiz</h1>
+
+<!-- MENU -->
 <div id="menu">
     <button onclick="show('create')">Quiz maken</button>
     <button onclick="show('search')">Zoek quiz</button>
     <button onclick="show('host')">Hosten</button>
     <button onclick="show('join')">Joinen</button>
+    <button onclick="show('adminLogin')">Admin</button>
 </div>
 
+<!-- QUIZ MAKEN -->
 <div id="create" style="display:none">
-    <h3>Quiz maken</h3>
+    <h2>Quiz maken</h2>
     <input id="quizName" placeholder="Quiz naam">
     <div id="questions"></div>
-    <button onclick="addQuestion()">Vraag toevoegen</button>
-    <button onclick="saveQuiz()">Opslaan</button>
-    <button onclick="show('menu')">Terug</button>
+    <button onclick="addQuestion()">➕ Vraag toevoegen</button>
+    <button onclick="saveQuiz()">💾 Opslaan</button>
+    <button onclick="show('menu')">⬅ Terug</button>
 </div>
 
+<!-- QUIZ ZOEKEN -->
 <div id="search" style="display:none">
-    <h3>Alle quizzes</h3>
+    <h2>Alle quizzes</h2>
     <div id="quizList"></div>
-    <button onclick="show('menu')">Terug</button>
+    <button onclick="show('menu')">⬅ Terug</button>
 </div>
 
 <div id="quizDetail" style="display:none">
     <div id="quizInfo"></div>
-    <button onclick="show('search')">Terug</button>
+    <button onclick="show('search')">⬅ Terug</button>
 </div>
 
+<!-- HOST -->
 <div id="host" style="display:none">
-    <h3>Host login</h3>
+    <h2>Host game</h2>
     <input id="hostCode" placeholder="Host code">
-    <button onclick="hostLogin()">Start game</button>
+    <button onclick="host()">START</button>
+
     <div id="hostPanel" style="display:none">
         <p><b>Game code:</b> <span id="joinCodeText"></span></p>
         <h3>Scoreboard</h3>
         <ul id="leaderboard"></ul>
-        <button onclick="nextQuestion()">Volgende vraag</button>
+        <button onclick="nextQuestion()">➡ Volgende vraag</button>
     </div>
-    <button onclick="show('menu')">Terug</button>
+
+    <button onclick="show('menu')">⬅ Terug</button>
 </div>
 
+<!-- JOIN -->
 <div id="join" style="display:none">
-    <h3>Join game</h3>
+    <h2>Join game</h2>
     <input id="joinCodeInput" placeholder="Game code">
     <input id="username" placeholder="Naam">
-    <button onclick="joinGame()">Join</button>
+    <button onclick="join()">Join</button>
+
     <div id="playerPanel" style="display:none">
         <h3 id="questionText"></h3>
         <div id="answers"></div>
+        <button id="powerBtn" onclick="usePowerUp()">⚡ Power-up</button>
     </div>
-    <button onclick="show('menu')">Terug</button>
+
+    <button onclick="show('menu')">⬅ Terug</button>
 </div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminLogin" style="display:none">
+    <h2>Admin login</h2>
+    <input id="adminUser" placeholder="Username">
+    <input id="adminPass" placeholder="Password" type="password">
+    <button onclick="adminLogin()">Login</button>
+    <button onclick="show('menu')">⬅ Terug</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none">
+    <h2>Alle quizzes</h2>
+    <div id="adminQuizList"></div>
+    <button onclick="show('menu')">⬅ Terug</button>
+</div>
+
 </div>
 
 <script>
 const socket = io();
 let quizQuestions=[];
-let joinCode='';
-let playerId='';
-let answered=false;
+let joinCode='', playerId='';
+let answered=false, powerLeft=0;
 
-const joinCodeInput = document.getElementById('joinCodeInput');
-
-window.onload = () => {
-    const role = localStorage.getItem('role');
-    const savedJoinCode = localStorage.getItem('joinCode');
-    if(role==='host' && savedJoinCode){
-        joinCode = savedJoinCode;
-        hostPanel.style.display='block';
-        joinCodeText.textContent = joinCode;
-        socket.emit('host-join', joinCode);
-        show('host');
-    } else if(role==='player' && savedJoinCode){
-        joinCode = savedJoinCode;
-        playerId = localStorage.getItem('playerId');
-        playerPanel.style.display='block';
-        socket.emit('player-join',{joinCode, playerId});
-        show('join');
-    } else show('menu');
-};
-
+/* NAV */
 function show(id){
-    document.querySelectorAll('.container > div').forEach(d=>d.style.display='none');
+    document.querySelectorAll('.box > div').forEach(d=>d.style.display='none');
     document.getElementById(id).style.display='block';
     if(id==='search') loadQuizzes();
 }
+show('menu');
 
+/* QUIZ MAKEN */
 function addQuestion(){
     const i=quizQuestions.length;
     quizQuestions.push({question:'',answers:['','','',''],correct:0});
-    const d=document.createElement('div');
-    d.innerHTML=`
-    <input placeholder="Vraag" onchange="quizQuestions[${i}].question=this.value">
-    <input placeholder="Antwoord 1" onchange="quizQuestions[${i}].answers[0]=this.value">
-    <input placeholder="Antwoord 2" onchange="quizQuestions[${i}].answers[1]=this.value">
-    <input placeholder="Antwoord 3" onchange="quizQuestions[${i}].answers[2]=this.value">
-    <input placeholder="Antwoord 4" onchange="quizQuestions[${i}].answers[3]=this.value">
-    <select onchange="quizQuestions[${i}].correct=this.value">
-        <option value="0">Correct: 1</option>
-        <option value="1">Correct: 2</option>
-        <option value="2">Correct: 3</option>
-        <option value="3">Correct: 4</option>
-    </select><hr>`;
-    questions.appendChild(d);
+    questions.innerHTML+=`
+        <input placeholder="Vraag" onchange="quizQuestions[${i}].question=this.value">
+        <input placeholder="Antwoord 1" onchange="quizQuestions[${i}].answers[0]=this.value">
+        <input placeholder="Antwoord 2" onchange="quizQuestions[${i}].answers[1]=this.value">
+        <input placeholder="Antwoord 3" onchange="quizQuestions[${i}].answers[2]=this.value">
+        <input placeholder="Antwoord 4" onchange="quizQuestions[${i}].answers[3]=this.value">
+        <select onchange="quizQuestions[${i}].correct=this.value">
+            <option value="0">Correct: 1</option>
+            <option value="1">Correct: 2</option>
+            <option value="2">Correct: 3</option>
+            <option value="3">Correct: 4</option>
+        </select><hr>`;
 }
 
 async function saveQuiz(){
-    const res = await fetch('/api/create',{
+    const r=await fetch('/api/create',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name: quizName.value, questions: quizQuestions})
+        body:JSON.stringify({name:quizName.value,questions:quizQuestions})
     });
-    const data = await res.json();
-    alert('Host code: '+data.hostCode);
-    quizQuestions=[];
-    questions.innerHTML='';
-    quizName.value='';
-    show('menu');
+    alert('Host code: '+(await r.json()).hostCode);
+    location.reload();
 }
 
+/* QUIZ ZOEKEN */
 async function loadQuizzes(){
-    const res = await fetch('/api/quizzes');
-    const quizzes = await res.json();
+    const r=await fetch('/api/quizzes');
+    const q=await r.json();
     quizList.innerHTML='';
-    quizzes.forEach(q=>{
+    q.forEach(x=>{
         const d=document.createElement('div');
         d.className='quiz-item';
-        d.textContent=q.name;
-        d.onclick=()=>showQuiz(q);
+        d.textContent=x.name;
+        d.onclick=()=>showQuiz(x);
         quizList.appendChild(d);
     });
 }
 
 function showQuiz(q){
     show('quizDetail');
-    let html=`<h3>${q.name}</h3><b>Host code:</b> ${q.hostCode}<hr>`;
+    let h=`<h2>${q.name}</h2><b>Host code:</b> ${q.hostCode}<hr>`;
     q.questions.forEach((v,i)=>{
-        html+=`<b>${i+1}. ${v.question}</b><ul>`;
-        v.answers.forEach((a,j)=>{
-            html+=`<li>${j+1}. ${a}${j==v.correct?' ✅':''}</li>`;
-        });
-        html+='</ul>';
+        h+=`<b>${i+1}. ${v.question}</b><ul>`;
+        v.answers.forEach((a,j)=>h+=`<li>${j+1}. ${a}${j==v.correct?' ✅':''}</li>`);
+        h+='</ul>';
     });
-    quizInfo.innerHTML=html;
+    quizInfo.innerHTML=h;
 }
 
-async function hostLogin(){
-    const res = await fetch('/api/host',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({hostCode:hostCode.value})
-    });
-    const data = await res.json();
-    if(!data.success) return alert('Foute host code');
-    joinCode = data.joinCode;
-    localStorage.setItem('role','host');
-    localStorage.setItem('joinCode', joinCode);
+/* HOST */
+async function host(){
+    const r=await fetch('/api/host',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hostCode:hostCode.value})});
+    const d=await r.json();
+    if(!d.success) return alert('Foute host code');
+    joinCode=d.joinCode;
+    joinCodeText.textContent=joinCode;
     hostPanel.style.display='block';
-    joinCodeText.textContent = joinCode;
-    socket.emit('host-join', joinCode);
-    show('host');
+    socket.emit('host-join',joinCode);
 }
+function nextQuestion(){socket.emit('next',joinCode)}
 
-function nextQuestion(){ socket.emit('next', joinCode); }
-
-socket.on('leaderboard', b=>{
-    leaderboard.innerHTML='';
-    b.forEach(p=>{
-        leaderboard.innerHTML+=`<li>${p.place}. ${p.name} – ${p.score}</li>`;
-    });
-});
-
-async function joinGame(){
-    const res = await fetch('/api/join',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({joinCode:joinCodeInput.value, username:username.value})
-    });
-    const data = await res.json();
-    if(!data.success) return alert('Game niet gevonden');
-    playerId = data.playerId;
-    joinCode = data.joinCode;
-    localStorage.setItem('role','player');
-    localStorage.setItem('joinCode', joinCode);
-    localStorage.setItem('playerId', playerId);
+/* JOIN */
+async function join(){
+    const r=await fetch('/api/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({joinCode:joinCodeInput.value,username:username.value})});
+    const d=await r.json();
+    if(!d.success) return alert('Game niet gevonden');
+    joinCode=d.joinCode;
+    playerId=d.playerId;
     playerPanel.style.display='block';
-    socket.emit('player-join',{joinCode, playerId});
+    socket.emit('player-join',{joinCode,playerId});
 }
 
-socket.on('question', q=>{
+/* SOCKET */
+socket.on('question',q=>{
     answered=false;
-    questionText.textContent = q.question;
+    powerLeft=Math.floor(q.totalQuestions/3);
+    updatePower();
+    questionText.textContent=q.question;
     answers.innerHTML='';
     q.answers.forEach((a,i)=>{
         const b=document.createElement('button');
         b.textContent=a;
         b.className='answer';
-        b.onclick=()=>{
-            if(answered) return;
-            answered=true;
-            [...answers.children].forEach(x=>x.disabled=true);
-            socket.emit('answer',{joinCode, playerId, answer:i});
-        };
+        b.onclick=()=>{if(answered)return;answered=true;socket.emit('answer',{joinCode,playerId,answer:i})};
         answers.appendChild(b);
     });
 });
 
-socket.on('feedback', f=>{
-    answers.innerHTML += f.correct?'✅ Goed!':'❌ Fout! Correct: '+(f.correctAnswer+1);
+socket.on('leaderboard',b=>{
+    leaderboard.innerHTML='';
+    b.forEach(p=>leaderboard.innerHTML+=`<li>${p.place}. ${p.name} – ${p.score}</li>`);
 });
 
-socket.on('end',()=>alert('Quiz afgelopen'));
+function usePowerUp(){
+    if(powerLeft<=0)return;
+    powerLeft--;
+    updatePower();
+    socket.emit('powerup',{joinCode,playerId});
+}
+function updatePower(){
+    powerBtn.disabled=powerLeft<=0;
+    powerBtn.textContent=powerLeft>0?`⚡ Power-up (${powerLeft})`:'⚡ Geen power-ups';
+}
+
+/* ADMIN */
+async function adminLogin(){
+    if(adminUser.value!=='admin'||adminPass.value!=='delete')return alert('Fout');
+    const r=await fetch('/api/quizzes');
+    const q=await r.json();
+    show('adminPanel');
+    adminQuizList.innerHTML='';
+    q.forEach(x=>{
+        adminQuizList.innerHTML+=`
+        <div class="quiz-item">
+            ${x.name}
+            <button onclick="deleteQuiz('${x.id}')">Delete</button>
+        </div>`;
+    });
+}
+async function deleteQuiz(id){
+    await fetch('/api/admin/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quizId:id,username:'admin',password:'delete'})});
+    adminLogin();
+}
 </script>
+
 </body>
 </html>
