@@ -1,0 +1,86 @@
+{
+  "quizzes": {
+    "1768311410230": {
+      "quizId": "1768311410230",
+      "hostCode": "100884",
+      "questions": [
+        {
+          "question": " fehsb",
+          "answers": [
+            "nwa",
+            "wefsfsa",
+            "wfwfgsf",
+            "fawfaw"
+          ],
+          "correct": 0
+        }
+      ]
+    },
+    "1768311811077": {
+      "quizId": "1768311811077",
+      "name": "TaalJacht",
+      "hostCode": "130416",
+      "questions": [
+        {
+          "question": "a FDfawb",
+          "answers": [
+            "b",
+            "qfewq",
+            "badwba",
+            "sbdawba"
+          ],
+          "correct": 0
+        }
+      ]
+    }
+  },
+  "sessions": {
+    "13788": {
+      "quizId": "1768311811077",
+      "joinCode": "13788",
+      "currentQ": 0,
+      "players": {},
+      "answeredOrder": []
+    },
+    "14076": {
+      "quizId": "1768311811077",
+      "joinCode": "14076",
+      "currentQ": 0,
+      "players": {
+        "1979": {
+          "name": "bjorn",
+          "score": 0,
+          "answered": false,
+          "last": null
+        }
+      },
+      "answeredOrder": []
+    },
+    "15090": {
+      "quizId": "1768311811077",
+      "joinCode": "15090",
+      "currentQ": 1,
+      "players": {
+        "1005": {
+          "name": "15090",
+          "score": 500,
+          "answered": false,
+          "last": null
+        },
+        "1712": {
+          "name": "vdz",
+          "score": 0,
+          "answered": false,
+          "last": null
+        },
+        "1719": {
+          "name": "15090F",
+          "score": 0,
+          "answered": false,
+          "last": null
+        }
+      },
+      "answeredOrder": []
+    }
+  }
+}
